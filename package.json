@@ -1,14 +1,19 @@
 {
-  "name": "q2",
+  "name": "pachisi-game",
   "version": "1.0.0",
-  "main": "index.js",
+  "description": "Pachisi game using Three.js",
+  "main": "main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "esbuild main.js --bundle --outfile=dist/bundle.js --format=esm",
+    "watch": "esbuild main.js --bundle --outfile=dist/bundle.js --format=esm --watch",
+    "serve": "npx http-server"
   },
-  "author": "",
-  "license": "ISC",
-  "description": "",
   "dependencies": {
     "three": "^0.169.0"
+  },
+  "devDependencies": {
+    "@rollup/plugin-node-resolve": "^15.3.0",
+    "esbuild": "^0.24.0",
+    "rollup": "^4.24.0"
   }
 }
