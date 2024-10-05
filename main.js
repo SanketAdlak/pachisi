@@ -78,21 +78,34 @@ function onPieceClick(event) {
 
     if (playerPiece && pachisi.canMovePiece(playerPiece)) {
       const currentPlayer = pachisi.currentPlayer;
-      const pieceIndex = pachisi.players[currentPlayer].pieces.indexOf(playerPiece);
-      
+      const pieceIndex =
+        pachisi.players[currentPlayer].pieces.indexOf(playerPiece);
+
       // Ask the player which dice value to use
-      const diceValueToUse = prompt(`Choose which dice value to use (${pachisi.diceValues.join(' or ')}):`, pachisi.diceValues[0]);
-      
+      const diceValueToUse = prompt(
+        `Choose which dice value to use (${pachisi.diceValues.join(" or ")}):`,
+        pachisi.diceValues[0]
+      );
+
       if (pachisi.diceValues.includes(Number(diceValueToUse))) {
         pachisi.movePiece(currentPlayer, pieceIndex, Number(diceValueToUse));
-        
+
         // Remove the used dice value
-        pachisi.diceValues = pachisi.diceValues.filter(value => value !== Number(diceValueToUse));
-        
+        const indexToRemove = pachisi.diceValues.indexOf(
+          Number(diceValueToUse)
+        );
+        if (indexToRemove !== -1) {
+          pachisi.diceValues.splice(indexToRemove, 1);
+        }
+
         if (pachisi.movesRemaining === 0) {
           alert("Turn ended. Next player's turn.");
         } else {
-          alert(`You have ${pachisi.movesRemaining} move(s) remaining with value(s): ${pachisi.diceValues.join(', ')}`);
+          alert(
+            `You have ${
+              pachisi.movesRemaining
+            } move(s) remaining with value(s): ${pachisi.diceValues.join(", ")}`
+          );
         }
       } else {
         alert("Invalid dice value selected. Please try again.");

@@ -1,6 +1,4 @@
 import * as THREE from "three";
-import { SVGLoader } from "three/examples/jsm/loaders/SVGLoader";
-
 class PlayerPiece {
   constructor(color, startPosition) {
     this.color = color;
@@ -68,7 +66,7 @@ class Pointer {
   }
 
   show(position) {
-    this.mesh.position.set(position.x, 0.8, position.y);
+    this.mesh.position.set(position.x, 1, position.y);
     this.mesh.visible = true;
   }
 
@@ -177,10 +175,10 @@ export class Pachisi {
     if (this.diceRolled) {
       return null;
     }
-    
+
     this.diceValues = [
       Math.floor(Math.random() * 6) + 1,
-      Math.floor(Math.random() * 6) + 1
+      Math.floor(Math.random() * 6) + 1,
     ];
     this.movesRemaining = 2;
     this.diceRolled = true;
@@ -217,14 +215,14 @@ export class Pachisi {
     if (this.movesRemaining <= 0) return;
 
     const piece = this.players[playerIndex].pieces[pieceIndex];
-    // This is still a placeholder for move logic
+    // This is still a placeholder for move logic since we need to map path on board
     const newPosition = {
-      x: piece.position.x + (Math.random() - 0.5) * steps * 0.5,
-      y: piece.position.y + (Math.random() - 0.5) * steps * 0.5
+      x: piece.position.x + steps * 0.5,
+      y: piece.position.y + steps * 0.5,
     };
     piece.moveTo(newPosition);
     this.players[playerIndex].pointers[pieceIndex].show(newPosition);
-    
+
     this.movesRemaining--;
     if (this.movesRemaining === 0) {
       this.diceRolled = false;
@@ -244,27 +242,18 @@ export class Pachisi {
   }
 
   canMovePiece(piece) {
-    return this.diceRolled && 
-           this.movesRemaining > 0 && 
-           this.players[this.currentPlayer].pieces.includes(piece);
-  }
-
-  update(deltaTime) {
-    // Add any continuous updates here
-    // For example, you could animate the pointers
-    this.players.forEach((player) => {
-      player.pointers.forEach((pointer) => {
-        if (pointer.mesh.visible) {
-          pointer.mesh.position.y = 0.8 + Math.sin(Date.now() * 0.005) * 0.1;
-        }
-      });
-    });
+    return (
+      this.diceRolled &&
+      this.movesRemaining > 0 &&
+      this.players[this.currentPlayer].pieces.includes(piece)
+    );
   }
 
   updatePlayerInfo() {
-    const currentPlayerElement = document.getElementById('current-player');
-    const playerColorElement = document.getElementById('player-color');
+    const currentPlayerElement = document.getElementById("current-player");
+    const playerColorElement = document.getElementById("player-color");
     currentPlayerElement.textContent = `Player ${this.currentPlayer + 1}`;
-    playerColorElement.style.backgroundColor = this.players[this.currentPlayer].colorName;
+    playerColorElement.style.backgroundColor =
+      this.players[this.currentPlayer].colorName;
   }
 }
