@@ -28,7 +28,8 @@ class PlayerPiece {
     group.add(bodyMesh);
     group.add(topMesh);
 
-    group.position.set(this.position.x, 0.25, this.position.y); // Raise it slightly off the board
+    // Position the piece at the center of its starting position
+    group.position.set(this.position.x, 0.25, this.position.y);
     return group;
   }
 
@@ -89,6 +90,8 @@ export class Pachisi {
     ];
     this.currentPlayer = 0;
     this.diceRolled = false;
+    this.diceValues = [];
+    this.movesRemaining = 0;
   }
 
   initializeBoard() {
@@ -130,10 +133,10 @@ export class Pachisi {
 
   createPlayerPieces() {
     const startPositions = [
-      { x: -4, y: -4 },
-      { x: 4, y: -4 },
-      { x: 4, y: 4 },
-      { x: -4, y: 4 },
+      { x: -3.5, y: -3.5 },
+      { x: 3, y: -3.5 },
+      { x: 3, y: 3 },
+      { x: -3.5, y: 3 },
     ];
 
     this.players.forEach((player, index) => {
@@ -171,11 +174,19 @@ export class Pachisi {
   }
 
   rollDice() {
-    const result = Math.floor(Math.random() * 6) + 1;
+    if (this.diceRolled) {
+      return null;
+    }
+    
+    this.diceValues = [
+      Math.floor(Math.random() * 6) + 1,
+      Math.floor(Math.random() * 6) + 1
+    ];
+    this.movesRemaining = 2;
+    this.diceRolled = true;
     this.highlightCurrentPlayerPieces();
     this.showPointersForCurrentPlayer();
-    this.diceRolled = true;
-    return result;
+    return this.diceValues;
   }
 
   highlightCurrentPlayerPieces() {
@@ -203,15 +214,22 @@ export class Pachisi {
   }
 
   movePiece(playerIndex, pieceIndex, steps) {
-    // This is a placeholder for move logic
+    if (this.movesRemaining <= 0) return;
+
     const piece = this.players[playerIndex].pieces[pieceIndex];
+    // This is still a placeholder for move logic
     const newPosition = {
       x: piece.position.x + (Math.random() - 0.5) * steps * 0.5,
-      y: piece.position.y + (Math.random() - 0.5) * steps * 0.5,
+      y: piece.position.y + (Math.random() - 0.5) * steps * 0.5
     };
     piece.moveTo(newPosition);
     this.players[playerIndex].pointers[pieceIndex].show(newPosition);
-    this.diceRolled = false;
+    
+    this.movesRemaining--;
+    if (this.movesRemaining === 0) {
+      this.diceRolled = false;
+      this.nextPlayer();
+    }
   }
 
   findPieceByMesh(mesh) {
@@ -226,9 +244,9 @@ export class Pachisi {
   }
 
   canMovePiece(piece) {
-    return (
-      this.diceRolled && this.players[this.currentPlayer].pieces.includes(piece)
-    );
+    return this.diceRolled && 
+           this.movesRemaining > 0 && 
+           this.players[this.currentPlayer].pieces.includes(piece);
   }
 
   update(deltaTime) {
@@ -244,12 +262,9 @@ export class Pachisi {
   }
 
   updatePlayerInfo() {
-    const player = this.players[this.currentPlayer];
-    document.getElementById("current-player").textContent = `Player ${
-      this.currentPlayer + 1
-    } (${player.colorName})`;
-    document.getElementById(
-      "player-color"
-    ).style.backgroundColor = `#${player.color.toString(16).padStart(6, "0")}`;
+    const currentPlayerElement = document.getElementById('current-player');
+    const playerColorElement = document.getElementById('player-color');
+    currentPlayerElement.textContent = `Player ${this.currentPlayer + 1}`;
+    playerColorElement.style.backgroundColor = this.players[this.currentPlayer].colorName;
   }
 }

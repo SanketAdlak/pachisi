@@ -44,10 +44,12 @@ function onWindowResize() {
 document.getElementById("roll-dice").addEventListener("click", () => {
   if (!pachisi.diceRolled) {
     const result = pachisi.rollDice();
-    alert(`You rolled a ${result}!`);
-    pachisi.updatePlayerInfo();
+    if (result) {
+      alert(`You rolled ${result[0]} and ${result[1]}!`);
+      pachisi.updatePlayerInfo();
+    }
   } else {
-    alert("You have already rolled the dice. Please move a piece.");
+    alert("You have already rolled the dice. Please move your pieces.");
   }
 });
 
@@ -75,12 +77,26 @@ function onPieceClick(event) {
     const playerPiece = pachisi.findPieceByMesh(clickedObject);
 
     if (playerPiece && pachisi.canMovePiece(playerPiece)) {
-      console.log("Moving piece:", playerPiece);
       const currentPlayer = pachisi.currentPlayer;
-      const pieceIndex =
-        pachisi.players[currentPlayer].pieces.indexOf(playerPiece);
-      pachisi.movePiece(currentPlayer, pieceIndex, pachisi.lastRollResult);
-      pachisi.nextPlayer();
+      const pieceIndex = pachisi.players[currentPlayer].pieces.indexOf(playerPiece);
+      
+      // Ask the player which dice value to use
+      const diceValueToUse = prompt(`Choose which dice value to use (${pachisi.diceValues.join(' or ')}):`, pachisi.diceValues[0]);
+      
+      if (pachisi.diceValues.includes(Number(diceValueToUse))) {
+        pachisi.movePiece(currentPlayer, pieceIndex, Number(diceValueToUse));
+        
+        // Remove the used dice value
+        pachisi.diceValues = pachisi.diceValues.filter(value => value !== Number(diceValueToUse));
+        
+        if (pachisi.movesRemaining === 0) {
+          alert("Turn ended. Next player's turn.");
+        } else {
+          alert(`You have ${pachisi.movesRemaining} move(s) remaining with value(s): ${pachisi.diceValues.join(', ')}`);
+        }
+      } else {
+        alert("Invalid dice value selected. Please try again.");
+      }
     }
   }
 }
