@@ -52,6 +52,63 @@ document.getElementById("roll-dice").addEventListener("click", () => {
     alert("You have already rolled the dice. Please move your pieces.");
   }
 });
+//export button
+const exportLogsButton = document.createElement("button");
+exportLogsButton.id = "export-logs";
+exportLogsButton.textContent = "Export Mouse Logs";
+exportLogsButton.style.cssText = `
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  padding: 10px 15px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  z-index: 1000;
+`;
+document.body.appendChild(exportLogsButton);
+
+// Mouse event logging
+let mouseEventLogs = [];
+
+function logMouseEvent(event) {
+  const log = `${new Date().toISOString()} : ${event.type} at (${
+    event.clientX
+  }, ${event.clientY})`;
+  console.log(log);
+  mouseEventLogs.push(log);
+}
+
+// Add event listeners for mouse events
+const mouseEvents = [
+  "click",
+  "mousemove",
+  "mousedown",
+  "mouseup",
+  "mouseover",
+  "mouseout",
+];
+mouseEvents.forEach((eventType) => {
+  renderer.domElement.addEventListener(eventType, logMouseEvent);
+});
+
+// Export logs functionality
+exportLogsButton.addEventListener("click", () => {
+  const logsJson = JSON.stringify(mouseEventLogs, null, 2);
+  const blob = new Blob([logsJson], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "mouse_event_logs.txt";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+});
 
 // Raycaster for piece selection
 const raycaster = new THREE.Raycaster();
