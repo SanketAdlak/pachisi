@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import { Pachisi } from "./pachisi/pachisi.js";
+import { Pachisi } from "./src/pachisi.js";
 
 // Basic setup
 const scene = new THREE.Scene();

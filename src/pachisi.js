@@ -1,5 +1,5 @@
-import * as THREE from 'three';
-import { SVGLoader } from 'three/examples/jsm/loaders/SVGLoader';
+import * as THREE from "three";
+import { SVGLoader } from "three/examples/jsm/loaders/SVGLoader";
 
 class PlayerPiece {
   constructor(color, startPosition) {
@@ -99,38 +99,23 @@ export class Pachisi {
       side: THREE.DoubleSide,
     });
     this.board = new THREE.Mesh(geometry, material);
-    this.board.rotation.x = Math.PI / 2;
+    this.board.rotation.x = -Math.PI / 2;
     this.scene.add(this.board);
 
-    // Load SVG and create overlay
-    const loader = new SVGLoader();
-    loader.load("./pachisi/pachisi.svg", (data) => {
-      const svgGroup = new THREE.Group();
-      const paths = data.paths;
+    // Load SVG as a texture
+    const loader = new THREE.TextureLoader();
+    loader.load("./src/pachisi.svg", (texture) => {
+      const svgMaterial = new THREE.MeshBasicMaterial({
+        map: texture,
+        transparent: true,
+        side: THREE.DoubleSide,
+      });
 
-      for (let i = 0; i < paths.length; i++) {
-        const path = paths[i];
-        const material = new THREE.MeshBasicMaterial({
-          color: path.color,
-          side: THREE.DoubleSide,
-          depthWrite: false,
-        });
+      const svgPlane = new THREE.PlaneGeometry(10, 10);
+      this.svgOverlay = new THREE.Mesh(svgPlane, svgMaterial);
+      this.svgOverlay.rotation.x = -Math.PI / 2;
+      this.svgOverlay.position.y = 0.01; // Slightly above the board
 
-        const shapes = path.toShapes(true);
-
-        for (let j = 0; j < shapes.length; j++) {
-          const shape = shapes[j];
-          const geometry = new THREE.ShapeGeometry(shape);
-          const mesh = new THREE.Mesh(geometry, material);
-          svgGroup.add(mesh);
-        }
-      }
-
-      svgGroup.scale.set(0.01, -0.01, 0.01); // Adjust scale as needed
-      svgGroup.position.set(-5, 0.01, -5); // Adjust position to center and raise slightly above the board
-      svgGroup.rotation.x = Math.PI / 2;
-
-      this.svgOverlay = svgGroup;
       this.scene.add(this.svgOverlay);
     });
 
