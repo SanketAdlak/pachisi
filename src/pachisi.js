@@ -105,7 +105,7 @@ export class Pachisi {
 
     // Load SVG as a texture
     const loader = new THREE.TextureLoader();
-    loader.load("./src/pachisi.svg", (texture) => {
+    loader.load("./src/Pachisi.svg", (texture) => {
       const svgMaterial = new THREE.MeshBasicMaterial({
         map: texture,
         transparent: true,
